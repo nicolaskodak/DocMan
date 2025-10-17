@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宇鯨智能股份有限公司 勞務報酬單</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .form-container {
+            max-width: 768px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-input {
+            background-color: #e0f2fe; /* Light blue background */
+            border: 1px solid #93c5fd;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            width: 100%;
+        }
+        .form-input-sm {
+             background-color: #e0f2fe;
+             border: 1px solid #93c5fd;
+             border-radius: 0.25rem;
+             padding: 0.25rem 0.5rem;
+             width: 60px;
+        }
+        .form-input-md {
+             background-color: #e0f2fe;
+             border: 1px solid #93c5fd;
+             border-radius: 0.25rem;
+             padding: 0.25rem 0.5rem;
+             width: 80px;
+        }
+        .form-date {
+            background-color: #e0f2fe;
+            border: 1px solid #93c5fd;
+            border-radius: 0.25rem;
+            padding: 0.15rem 0.5rem;
+        }
+        .form-checkbox {
+            margin-right: 0.5rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+        .signature-canvas {
+            background-color: #e0f2fe;
+            border: 1px solid #93c5fd;
+            border-radius: 0.25rem;
+            cursor: crosshair;
+        }
+        .image-upload-box {
+            border: 2px dashed #9ca3af;
+            background-color: #e0f2fe;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+        }
+        .image-upload-box:hover {
+            border-color: #3b82f6;
+        }
+        .upload-text {
+            color: #6b7280;
+            font-size: 0.9rem;
+            text-align: center;
+            z-index: 1;
+        }
+        .image-preview {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            width: auto;
+            height: auto;
+        }
+        .form-row-label {
+            white-space: nowrap;
+            padding-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td, th {
+            border: 1px solid #6b7280;
+            padding: 0.5rem;
+            vertical-align: middle;
+        }
+        .no-border {
+            border: none;
+        }
+        .note {
+            font-size: 0.8rem;
+            color: #4b5563;
+        }
+        tr {
+            page-break-inside: avoid;
+        }
+        
+        /* PDF Export Optimization Styles */
+        .pdf-export .form-container {
+            margin: 0 !important;
+            padding: 0.2rem !important;
+            box-shadow: none !important;
+        }
+        .pdf-export header {
+            margin-bottom: 0.2rem !important;
+            padding-top: 0 !important;
+        }
+        .pdf-export h1 {
+            font-size: 1rem !important;
+            margin-bottom: 0.15rem !important;
+            font-weight: 600 !important;
+            line-height: 1.2 !important;
+        }
+        .pdf-export .flex.justify-between {
+            margin-bottom: 0.25rem !important;
+        }
+        .pdf-export .text-sm {
+            font-size: 0.7rem !important;
+            line-height: 1.2 !important;
+        }
+        .pdf-export td, .pdf-export th {
+            padding: 0.15rem !important;
+            font-size: 0.75rem !important;
+            line-height: 1.25 !important;
+        }
+        .pdf-export .image-upload-box {
+            height: 180px !important;
+        }
+        .pdf-export .upload-text {
+            display: none !important;
+        }
+        .pdf-export footer {
+            margin-top: 0.25rem !important;
+            padding-top: 0.25rem !important;
+        }
+        .pdf-export .note {
+            font-size: 0.6rem !important;
+            line-height: 1.1 !important;
+            margin-bottom: 0.05rem !important;
+        }
+        .pdf-export .mt-4 {
+            margin-top: 0.25rem !important;
+        }
+        .pdf-export h2 {
+            font-size: 0.85rem !important;
+            margin-bottom: 0.15rem !important;
+        }
+        .pdf-export .grid.gap-4 {
+            gap: 0.25rem !important;
+        }
+        .pdf-export .mb-2 {
+            margin-bottom: 0.15rem !important;
+        }
+        .pdf-export .mb-1 {
+            margin-bottom: 0.1rem !important;
+        }
+        .pdf-export .mb-4 {
+            margin-bottom: 0.25rem !important;
+        }
+        .pdf-export .mb-6 {
+            margin-bottom: 0.2rem !important;
+        }
+        .pdf-export .p-4 {
+            padding: 0.25rem !important;
+        }
+        .pdf-export .text-center {
+            line-height: 1.2 !important;
+        }
+        .pdf-export .font-bold {
+            font-weight: 600 !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <header class="text-center mb-6">
+        <h1 class="text-2xl font-bold">宇鯨智能股份有限公司 勞務報酬單</h1>
+    </header>
+
+    <div class="flex justify-between items-center mb-4 text-sm">
+        <div class="flex space-x-4">
+            <label class="flex items-center">
+                <input type="checkbox" checked class="form-checkbox">執行業務 9A-<input type="text" class="form-input-md" name="type_of_work" value="程式設計"> (註2)
+            </label>
+            <label class="flex items-center">
+                <input type="checkbox" class="form-checkbox">稿費 9B (註3)
+            </label>
+            <label class="flex items-center">
+                <input type="checkbox" class="form-checkbox">兼職薪資 (50) (註4)
+            </label>
+        </div>
+        <div class="flex items-center">
+            <label for="date">填表日期：</label>
+            <input type="date" id="date" name="date" class="form-date">
+        </div>
+    </div>
+
+    <!-- Main Form Table -->
+    <table style="table-layout: fixed;">
+        <!-- Row 1: Basic Info Header -->
+        <tr>
+            <td rowspan="3" class="w-1/12 text-center font-bold">領<br>款<br>人<br>基<br>本<br>資<br>料</td>
+            <td class="w-3/12">
+                <label><input type="checkbox" checked class="form-checkbox">本國籍</label><br>
+                <label><input type="checkbox" class="form-checkbox">外國籍在台 滿 183天</label><br>
+                <label><input type="checkbox" class="form-checkbox">外國籍 在台 未滿 183天</label>
+            </td>
+            <td colspan="2" class="w-8/12">
+                <table class="w-full" style="table-layout: fixed;">
+                    <tr class="no-border">
+                        <td class="no-border" style="width: 50%; padding: 0.25rem 0.25rem 0.25rem 0;">姓名：<input type="text" name="name" class="form-input" style="width: calc(100% - 30px);"></td>
+                        <td class="no-border" style="width: 50%; padding: 0.25rem 0 0.25rem 0.25rem;">聯絡電話：<input type="text" name="mobile_number" class="form-input" style="width: calc(100% - 60px);"></td>
+                    </tr>
+                    <tr class="no-border">
+                         <td class="no-border" style="width: 50%; padding: 0.25rem 0.25rem 0.25rem 0;">身分證字號：<input type="text" name="personal_id" class="form-input" style="width: calc(100% - 65px);"></td>
+                         <td class="no-border" style="width: 50%; padding: 0.25rem 0 0.25rem 0.25rem;">居留證/護照No.：<input type="text" class="form-input" style="width: calc(100% - 95px);"></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <!-- Row 2: Address -->
+        <tr>
+             <td colspan="3"><span class="form-row-label">戶籍地址：</span><input type="text" name="address" class="form-input" style="width: calc(100% - 85px); display: inline-block;"></td>
+        </tr>
+         <!-- Row 3: Mailing Address -->
+        <tr>
+             <td colspan="3">
+                 <span class="form-row-label">通訊地址：</span><input type="text" class="form-input" style="width: calc(100% - 160px); display: inline-block;">
+                 <label class="ml-4" style="display: inline-block;"><input type="checkbox" checked class="form-checkbox align-middle">同上</label>
+            </td>
+        </tr>
+        <!-- Row 4: Work Content Header -->
+        <tr>
+            <td rowspan="3" class="text-center font-bold">勞<br>務<br>內<br>容</td>
+            <td colspan="3">專案名稱：<input type="text" name="project_name" class="form-input w-4/5 inline-block" value="客戶數據標註與整理"></td>
+        </tr>
+        <!-- Row 5: Work Period -->
+        <tr>
+            <td colspan="3">
+                期間：自 <input type="date" name="work_start_date" class="form-date"> 至 <input type="date" name="work_end_date" class="form-date">
+            </td>
+        </tr>
+        <!-- Row 6: Work Description -->
+        <tr>
+            <td colspan="3">職業內容：<input type="text" name="work_content" class="form-input" style="width: calc(100% - 80px); display: inline-block;"></td>
+        </tr>
+        <!-- Row 7: Amount -->
+        <tr>
+            <td rowspan="2" class="text-center font-bold">領<br>款<br>金<br>額</td>
+            <td class="w-7/12">
+                支領金額：新台幣 <input type="text" name="amount" class="form-input-md w-3/5 inline-block"> 元<br>
+                代扣所得稅（ %）：新台幣 <input type="text" name="income_tax" class="form-input-md w-3/5 inline-block"> 元<br>
+                二代健保（2.11%）：新台幣 <input type="text" name="health_insurance_tax" class="form-input-md w-3/5 inline-block"> 元<br>
+                支領淨額：新台幣 <input type="text" name="amount_total" class="form-input-md w-3/5 inline-block"> 元
+            </td>
+            <td colspan="2" class="w-4/12 text-xs align-top">
+                本國籍應扣繳稅額 ≤ 2,000者不預先扣繳。<br>
+                非固定薪資：5% (起扣點40,001)<br>
+                執行業務報酬(9A)：10% (起扣點20,001)<br>
+                稿費(9B)：10% (起扣點20,001)<br>
+                機會中獎獎金(91)：10%(起扣點20,001)
+            </td>
+        </tr>
+        <!-- Row 8: Payment Method -->
+        <tr>
+            <td colspan="3">
+                 <div class="mb-2">付款方式：
+                    <label><input type="checkbox" class="form-checkbox">現金</label>
+                    <label><input type="checkbox" class="form-checkbox">支票</label>
+                    <label><input type="checkbox" checked class="form-checkbox">匯款</label>
+                    <label><input type="checkbox" class="form-checkbox">禮券</label>
+                </div>
+                <table class="w-full">
+                    <tr class="no-border">
+                        <td class="no-border p-1">銀行：<input type="text" name="bank_name" class="form-input-sm w-20 inline-block"> 銀行 <input type="text" name="bank_branch" class="form-input w-20 inline-block"> 分行</td>
+                        <td class="no-border p-1">帳號：<input type="text" name="bank_account_number" class="form-input-md"></td>
+                        <td class="no-border p-1">戶名：<input type="text" name="bank_account_name" class="form-input-md"></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <!-- Row 9: Receipt Confirmation -->
+        <tr>
+            <td colspan="4" class="p-4">
+                茲收到支付本人之報酬，共計 新台幣
+                <input type="text" name="amount_hundred_thousand" class="form-input-sm"> 拾
+                <input type="text" name="amount_ten_thousand" class="form-input-sm"> 萬
+                <input type="text" name="amount_thousand" class="form-input-sm"> 仟
+                <input type="text" name="amount_hundred" class="form-input-sm"> 佰
+                <input type="text" name="amount_ten" class="form-input-sm"> 拾
+                <input type="text" name="amount_digit" class="form-input-sm"> 元 整。
+            </td>
+        </tr>
+        <!-- Row 10: Signature -->
+        <tr>
+            <td colspan="4" class="p-4">
+                <div class="flex justify-between items-end">
+                    <div>
+                        領款人：
+                        <div class="inline-block relative">
+                            <canvas id="signatureCanvas" class="signature-canvas" width="300" height="80"></canvas>
+                        </div>
+                        <button id="clearSignatureBtn" class="ml-2 px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300">清除</button>
+                    </div>
+                    <div class="font-bold">（親簽）</div>
+                </div>
+            </td>
+        </tr>
+        <!-- Row 11: ID Copy Note -->
+        <tr>
+            <td colspan="4" class="text-center font-bold text-red-600">
+                請附 身分證影本 （外籍人士請附居留證/護照影本）。
+            </td>
+        </tr>
+    </table>
+
+    <!-- ID Copy Section -->
+    <div class="mt-4">
+        <h2 class="text-center font-bold text-lg mb-2">身分證（居留證/護照）影本黏貼處</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <div class="text-center font-bold mb-1">正 面</div>
+                <div class="image-upload-box" onclick="document.getElementById('id_card_front').click()">
+                    <span class="upload-text">點擊此處上傳正面</span>
+                    <img id="preview_front" class="image-preview" style="display:none;" alt="">
+                    <input type="file" id="id_card_front" class="hidden" accept="image/*" onchange="handleImageUpload(this, 'preview_front')">
+                </div>
+            </div>
+            <div>
+                <div class="text-center font-bold mb-1">反 面</div>
+                <div class="image-upload-box" onclick="document.getElementById('id_card_back').click()">
+                    <span class="upload-text">點擊此處上傳反面</span>
+                    <img id="preview_back" class="image-preview" style="display:none;" alt="">
+                    <input type="file" id="id_card_back" class="hidden" accept="image/*" onchange="handleImageUpload(this, 'preview_back')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Section -->
+    <footer class="mt-8 pt-4 border-t">
+        <p class="note">註1： 承攬或接案者(非僱傭關係) ，勾選9A或9B，請填「勞務報酬單」並由 所得人親簽 ，當作費用憑證。</p>
+        <p class="note">註2： 9A執行業務者 ，係指律師、會計師、建築師、技師、醫師、藥師、助產士、醫事檢驗師、 程式設計師 、精算師、不動產估價師、物理治療師、職能治療師、營養師、心理師、地政士、記帳士、 經紀人 、代書人、 表演人 、引水人、節目製作人、商標代理人、專利代理人、仲裁人、書畫家、版畫家、命理卜卦、 工匠 、公共安全檢查人員、民間公證人 或「其他」 以技藝自力營生者。</p>
+        <p class="note">註3： 9B稿費：個人稿費、版稅、樂譜、作曲、編劇、漫畫、講演的鐘點費。</p>
+        <p class="note">註4： 已投保勞健保 之員工 免填 勞務報酬單。 (屬僱傭關係)未投保勞健保 之員工 申報薪資(50) ， 公司須繳納2.11%二代健保 (健保局隔年會發單)。</p>
+    </footer>
+
+    <div id="download-section" class="text-center mt-8">
+        <button id="downloadPdfBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+            下載為 PDF
+        </button>
+    </div>
+
+</div>
+
+<script>
+    // --- Simple Image Upload Handler ---
+    function handleImageUpload(inputElement, previewId) {
+        const file = inputElement.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById(previewId);
+            img.src = e.target.result;
+            img.style.display = 'block';
+            
+            // Hide upload text
+            const uploadBox = inputElement.closest('.image-upload-box');
+            const uploadText = uploadBox.querySelector('.upload-text');
+            if (uploadText) {
+                uploadText.style.display = 'none';
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+    // --- Signature Canvas Logic ---
+    window.addEventListener('load', () => {
+        const canvas = document.getElementById('signatureCanvas');
+        const clearButton = document.getElementById('clearSignatureBtn');
+        const ctx = canvas.getContext('2d');
+
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        // Set today's date as default for the date input
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
+
+        // Set line style
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+
+        function getMousePos(canvasDom, mouseEvent) {
+            const rect = canvasDom.getBoundingClientRect();
+            return {
+                x: mouseEvent.clientX - rect.left,
+                y: mouseEvent.clientY - rect.top
+            };
+        }
+        
+        function getTouchPos(canvasDom, touchEvent) {
+            const rect = canvasDom.getBoundingClientRect();
+            return {
+                x: touchEvent.touches[0].clientX - rect.left,
+                y: touchEvent.touches[0].clientY - rect.top
+            };
+        }
+
+
+        function draw(x, y) {
+            if (!drawing) return;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            [lastX, lastY] = [x, y];
+        }
+        
+        // Mouse events
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            const pos = getMousePos(canvas, e);
+            [lastX, lastY] = [pos.x, pos.y];
+        });
+        canvas.addEventListener('mousemove', (e) => draw(getMousePos(canvas, e).x, getMousePos(canvas, e).y));
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mouseout', () => drawing = false);
+        
+        // Touch events
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            drawing = true;
+            const pos = getTouchPos(canvas, e);
+            [lastX, lastY] = [pos.x, pos.y];
+        });
+        canvas.addEventListener('touchmove', (e) => {
+             e.preventDefault();
+             draw(getTouchPos(canvas, e).x, getTouchPos(canvas, e).y)
+        });
+        canvas.addEventListener('touchend', (e) => {
+             e.preventDefault();
+             drawing = false;
+        });
+
+
+        // Clear button
+        clearButton.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+    });
+
+    // --- PDF Download Logic ---
+    document.getElementById('downloadPdfBtn').addEventListener('click', function () {
+        const formContainer = document.querySelector('.form-container');
+        const downloadSection = document.getElementById('download-section');
+        const body = document.body;
+        
+        // Check if images are loaded
+        const images = document.querySelectorAll('.image-preview');
+        const imagePromises = Array.from(images).map(img => {
+            if (img.src && img.src !== '' && !img.complete) {
+                return new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            }
+            return Promise.resolve();
+        });
+        
+        // Wait for all images to load before generating PDF
+        Promise.all(imagePromises).then(() => {
+            // Hide the button section from the PDF output
+            downloadSection.style.display = 'none';
+            // Temporarily remove max-width to allow proper scaling for the PDF
+            formContainer.style.maxWidth = 'none';
+            // Add PDF export class for optimized styling
+            body.classList.add('pdf-export');
+
+
+            const opt = {
+              margin:       0.1,  // Minimal margin of 0.1 inches
+              filename:     '宇鯨智能_勞務報酬單.pdf',
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { 
+                  scale: 2, 
+                  useCORS: true, 
+                  allowTaint: true,
+                  logging: false,
+                  imageTimeout: 0
+              },
+              jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+              pagebreak:    { mode: ['css', 'avoid-all'] }
+            };
+
+            // Generate and save the PDF, then show the button again and restore styles
+            html2pdf().set(opt).from(formContainer).save().then(() => {
+                downloadSection.style.display = 'block';
+                formContainer.style.maxWidth = '1024px';
+                body.classList.remove('pdf-export');
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
+
