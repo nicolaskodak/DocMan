@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宇鯨智能股份有限公司 勞務報酬單</title>
+    <title>宇鯨智能股份有限公司 文件生成工具</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
@@ -11,14 +11,63 @@
             font-family: 'Inter', 'Noto Sans TC', sans-serif;
             background-color: #f3f4f6;
         }
-        .form-container {
+        
+        /* Tab Styles */
+        .tab-container {
             max-width: 768px;
             margin: 2rem auto;
-            padding: 2rem;
             background-color: white;
             border-radius: 0.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 1rem;
+            background-color: #f3f4f6;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            background-color: #e5e7eb;
+        }
+        
+        .tab-button.active {
+            background-color: white;
+            color: #2563eb;
+            border-bottom: 3px solid #2563eb;
+            margin-bottom: -2px;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        
         .form-input {
             background-color: #e0f2fe; /* Light blue background */
             border: 1px solid #93c5fd;
@@ -210,10 +259,15 @@
 </head>
 <body>
 
-<div class="form-container">
-    <header class="text-center mb-6">
-        <h1 class="text-2xl font-bold">宇鯨智能股份有限公司 勞務報酬單</h1>
-    </header>
+<div class="tab-container">
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="switchTab('labor', this)">勞務報酬單</button>
+        <button class="tab-button" onclick="switchTab('nda', this)">自然人NDA</button>
+    </div>
+    
+    <!-- Tab 1: 勞務報酬單 -->
+    <div id="labor-tab" class="tab-content active">
+        <div class="form-container">
 
     <div class="flex justify-between items-center mb-4 text-sm">
         <div class="flex space-x-4">
@@ -397,7 +451,77 @@
 
 </div>
 
+    </div><!-- End labor-tab -->
+    
+    <!-- Tab 2: 自然人NDA -->
+    <div id="nda-tab" class="tab-content">
+        <div class="form-container">
+            <header class="text-center mb-6">
+                <h1 class="text-2xl font-bold">保密契約</h1>
+            </header>
+
+            <div class="mb-4">
+                <h3 class="text-lg font-bold mb-3">立契約書人</h3>
+                <div class="mb-3">
+                    <label class="block font-semibold mb-1">甲方：宇鯨智能股份有限公司</label>
+                </div>
+                <div class="mb-3">
+                    <label class="block font-semibold mb-1">乙方姓名：</label>
+                    <input type="text" id="nda-name" class="form-input" placeholder="填寫乙方姓名">
+                </div>
+                <div class="mb-3">
+                    <label class="block font-semibold mb-1">資料內容：</label>
+                    <input type="text" id="nda-data" class="form-input" placeholder="例：客戶名單、商業計劃" value="客戶數據">
+                </div>
+                <div class="mb-3">
+                    <label class="block font-semibold mb-1">執行項目：</label>
+                    <input type="text" id="nda-project" class="form-input" placeholder="例：數據標註與整理" value="數據標註與整理">
+                </div>
+                <div class="mb-3">
+                    <label class="block font-semibold mb-1">乙方身分證字號：</label>
+                    <input type="text" id="nda-personal-id" class="form-input" placeholder="填寫身分證字號">
+                </div>
+                <div class="mb-3">
+                    <label class="block font-semibold mb-1">乙方地址：</label>
+                    <input type="text" id="nda-address" class="form-input" placeholder="填寫完整地址">
+                </div>
+                <div class="mb-3">
+                    <label class="block font-semibold mb-1">簽訂日期：</label>
+                    <input type="date" id="nda-date" class="form-date">
+                </div>
+            </div>
+
+            <div id="download-nda-section" class="text-center mt-8">
+                <button id="downloadNdaPdfBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    下載為 PDF
+                </button>
+            </div>
+        </div>
+    </div><!-- End nda-tab -->
+
+</div><!-- End tab-container -->
+
 <script>
+    // --- Tab Switching Logic ---
+    function switchTab(tabName, button) {
+        // Hide all tabs
+        const allTabs = document.querySelectorAll('.tab-content');
+        allTabs.forEach(tab => tab.classList.remove('active'));
+        
+        // Deactivate all buttons
+        const allButtons = document.querySelectorAll('.tab-button');
+        allButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Show selected tab
+        const selectedTab = document.getElementById(tabName + '-tab');
+        if (selectedTab) {
+            selectedTab.classList.add('active');
+        }
+        
+        // Activate clicked button
+        button.classList.add('active');
+    }
+
     // --- Simple Image Upload Handler ---
     function handleImageUpload(inputElement, previewId) {
         const file = inputElement.files[0];
@@ -428,12 +552,18 @@
         let lastX = 0;
         let lastY = 0;
 
-        // Set today's date as default for the date input
+        // Set today's date as default for the date inputs
         const today = new Date();
         const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
-        document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
+        const dateString = `${yyyy}-${mm}-${dd}`;
+        
+        const dateInput = document.getElementById('date');
+        if (dateInput) dateInput.value = dateString;
+        
+        const ndaDateInput = document.getElementById('nda-date');
+        if (ndaDateInput) ndaDateInput.value = dateString;
 
         // Set line style
         ctx.strokeStyle = '#000000';
@@ -549,6 +679,149 @@
                 formContainer.style.maxWidth = '1024px';
                 body.classList.remove('pdf-export');
             });
+        });
+    });
+
+    // --- NDA PDF Download Logic ---
+    document.getElementById('downloadNdaPdfBtn').addEventListener('click', function () {
+        // Get form values
+        const ndaName = document.getElementById('nda-name').value || '<<[name]>>';
+        const ndaData = document.getElementById('nda-data').value || '<<[data]>>';
+        const ndaProject = document.getElementById('nda-project').value || '<<[project]>>';
+        const ndaPersonalId = document.getElementById('nda-personal-id').value || '<<[personal_id]>>';
+        const ndaAddress = document.getElementById('nda-address').value || '<<[address]>>';
+        const ndaDate = document.getElementById('nda-date').value || new Date().toISOString().split('T')[0];
+
+        // Create NDA HTML content with form values
+        const ndaHtmlContent = `
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; padding: 20px; line-height: 1.6; }
+        h3 { font-size: 16px; margin-top: 20px; margin-bottom: 10px; }
+        p { margin: 8px 0; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        td { border: 1px solid #000; padding: 8px; }
+        .header { text-align: center; font-weight: bold; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>保密契約</h2>
+    </div>
+
+    <h3>立契約書人</h3>
+    <p>甲方：宇鯨智能股份有限公司</p>
+    <p>乙方：${ndaName}（以下甲方與乙方合稱「雙方」）</p>
+    
+    <p>緣雙放擬進行業務合作，由甲方提供其所持有關於 ${ndaData}（以下簡稱「本資料」），供乙方執行 ${ndaProject} 之用（以下簡稱「本目的」）。為使合作順利進行，並確保各項機密資訊之秘密性，雙方當事人同意並約定如下：</p>
+
+    <h3>第一條 保密標的</h3>
+    <p>一、本契約所稱「本資料」，係指甲方為達成本目的而提供予乙方之商業或技術性資訊，包括但不限於產品、筆稿、文件、計畫書、草圖、模型、圖表、統計數據、備忘錄、電子郵件、圖樣等資料，不論其以何種形式表達或載體。</p>
+    <p>二、乙方亦同意，本契約內容及簽訂之事實，應依本契約約定保密。</p>
+
+    <h3>第二條 保密人員</h3>
+    <p>乙方承諾僅將本資料使用於本目的，並採取符合業界標準之資訊安全措施，以維護資料機密性。除在職員工或代表人於執行本目的之必要範圍內得知悉外，丙方不得揭露予其他第三人知悉。</p>
+
+    <h3>第二條之一 共享資訊及甲方之責任</h3>
+    <p>一、甲方所提供之資料，乙方應於其內部合理範圍內使用，僅限於本目的，並不得洩漏予本協議以外之第三人。</p>
+    <p>二、乙方應就其接收之資料負責妥善處理與紀錄，如資料未附明確來源者，乙方應盡合理辨識義務。甲方如未事先標示資料來源，而事後就資料歸屬或使用方式提出不同主張，乙方得主張其無從辨識來源，並不因來源混淆而承擔責任。</p>
+    <p>三、乙方於合理審慎之情況下使用資料，若無重大過失，亦無違反保密義務者，應不負資料歸屬錯誤所引起之相關法律責任，並得據以主張善意免責。</p>
+    <p>四、雙方如對資料內容或處理方式有不同主張或要求時，乙方必須暫停該部分資料之使用，並請求雙方協調一致後始得繼續使用。協調不成者，雙方得請求第三方專家決定，或以書面形式確認處理方式，且雙方應負擔所產生費用。</p>
+
+    <h3>第三條 注意義務</h3>
+    <p>乙方應維護本資料機密性，非經雙方書面同意，不得逆向解析本資料。</p>
+
+    <h3>第四條 契約期間</h3>
+    <p>乙方對本協議所取得之機密資料，應自揭露日起負保密義務，並持續至該資料不再具機密性，或自揭露日起屆滿五年止，以較早者為準。</p>
+
+    <h3>第五條 除外條款</h3>
+    <p>一、本資料任一部份具有下列情形之一時，該部份不適用本契約：</p>
+    <p>1. 非因乙方之故意或過失，已為公眾所知悉者；</p>
+    <p>2. 本契約生效後，乙方自第三人處合法取得該資料，且乙方未明知或依一般合理注意義務應知該第三人取得該資料之方式不當或違反保密義務者；</p>
+    <p>3. 乙方未使用本資料而自行獨立開發出相同技術者；</p>
+    <p>4. 經雙方書面同意揭露者。</p>
+    <p>二、乙方因法院之裁決而必須揭露本資料者，乙方應於事前通知甲方並向法院申請相關保護措施後方得揭露。乙方雖依法院之裁決而做揭露，但乙方之保密義務並未因而解除。</p>
+    <p>三、本條第一項及第二項之情事發生時，乙方應舉證證明該情事之發生，且應於該情事發生後立即通知甲方。</p>
+
+    <h3>第六條 權利保留</h3>
+    <p>本契約之簽訂並不代表甲方已明示或暗示，或有義務將其擁有之相關專利權、著作權、商標權或其他智慧財產權授權予乙方。本契約之簽訂並未在雙方之間創設諸如代理、聘僱或合夥之關係；同時亦不表示當事人之間承諾開始進行或於未來從事任何技術上或商務上之合作、計劃或交易。</p>
+
+    <h3>第七條 擔保條款</h3>
+    <p>一、甲方擔保其所提供資料，未侵害任何第三人之智慧財產權或其他權利。如乙方因使用該資料而遭第三人主張侵權，實際提供該資料之甲方應負責排除並賠償乙方一切損害。乙方可以拒絕繼續合作並終止合約。</p>
+    <p>二、如發生第三人主張侵權事件，乙方應立即通知甲方並配合其主張抗辯。</p>
+
+    <h3>第八條 協助義務</h3>
+    <p>如乙方發現任何第三人不當使用本資料時，乙方應即通知甲方並與甲方充分合作，以利甲方維護其權益，或防止不當使用之情形繼續存在。</p>
+
+    <h3>第九條 禁止轉讓</h3>
+    <p>本契約之一切權利義務，非經甲方書面同意不得轉讓予第三人。</p>
+
+    <h3>第十條 資料返還</h3>
+    <p>一、甲方得隨時以書面通知方式要求乙方返還本資料，乙方應自接獲甲方通知之日起三十個工作日內，將本資料之原件、影本及所有複製品一併返還予甲方，並不得保留任何形式之副本。</p>
+    <p>二、當乙方完成本目的，或本契約經終止、解除或有效期間屆滿時，乙方亦應於三十個工作日內完成本資料之返還。甲方如要求乙方銷燬本資料者，乙方應配合銷燬，並於銷燬完成後立即出具書面切結書，敘明銷燬方式及完成情形。</p>
+    <p>三、但若乙方因稽核、法令遵循、會計紀錄保存或其他依法應保存之必要情形，而需保留部分本資料之副本者，乙方得於最小必要範圍內留存，惟仍應持續遵守本契約之保密義務，並不得將該等資料用於本目的以外之用途。</p>
+    <p>四、乙方於返還或銷燬本資料後，其保密義務仍持續有效，不因返還、銷燬或契約終止而解除。</p>
+
+    <h3>第十一條 違約效果</h3>
+    <p>一、乙方若違反本契約之任何約定，應賠償甲方因此所受之一切損害。乙方之員工、代理人或受僱人若於執行本目的期間違反本契約相關條款，如乙方未善盡合理內部控管措施而致該等人員違約行為者，視為乙方行為，乙方應負連帶責任。惟乙方如能證明其已採取合理之管理及監督措施，且非其可歸責之事由所致，則不負連帶責任。</p>
+    <p>二、如甲方認為乙方違反本契約而致其權益可能受損，並有提出保全程序（如假扣押或假處分）之必要時，雙方應本誠信原則先行協商處理，協商不成者，甲方得依法院裁量及相關法律程序聲請適當保全措施，惟乙方保留依法陳述或抗辯之權利。</p>
+
+    <h3>第十二條 合意管轄</h3>
+    <p>凡雙方因本契約或違反本契約引起之糾紛、爭議或歧見，雙方同意先本誠信原則協商之，協商不成而涉訟時，雙方特此同意以臺灣臺北地方法院為第一審管轄法院。</p>
+
+    <h3>第十三條 契約份數</h3>
+    <p>本契約壹式兩份，由雙方各執壹份為憑。</p>
+
+    <h3>立約人：</h3>
+    <table>
+        <tr>
+            <td>
+                <strong>甲方</strong><br>
+                公司：宇鯨智能股份有限公司<br>
+                代表人：柯達<br>
+                地址：臺北市信義區基隆路1段155號7樓<br>
+                簽章：_______________
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td>
+                <strong>乙方</strong><br>
+                姓名：${ndaName}<br>
+                身分證字號：${ndaPersonalId}<br>
+                地址：${ndaAddress}<br>
+                簽章：_______________
+            </td>
+        </tr>
+    </table>
+
+    <p><strong>簽訂日期：${ndaDate}</strong></p>
+</body>
+</html>
+        `;
+
+        // Create a temporary div with the NDA content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = ndaHtmlContent;
+        tempDiv.style.display = 'none';
+        document.body.appendChild(tempDiv);
+
+        // Generate PDF
+        const opt = {
+            margin: 10,
+            filename: '宇鯨智能_自然人NDA.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(tempDiv).save().then(() => {
+            document.body.removeChild(tempDiv);
         });
     });
 </script>
