@@ -140,7 +140,7 @@
             line-height: 1.25 !important;
         }
         .pdf-export .image-upload-box {
-            height: 180px !important;
+            height: 140px !important;
         }
         .pdf-export .upload-text {
             display: none !important;
@@ -184,6 +184,27 @@
         }
         .pdf-export .font-bold {
             font-weight: 600 !important;
+        }
+        .pdf-export .mt-8 {
+            margin-top: 0.2rem !important;
+        }
+        .pdf-export .border-t {
+            border-top: none !important;
+            padding-top: 0.1rem !important;
+        }
+        .pdf-export footer {
+            margin: 0 !important;
+            padding: 0.1rem 0 0 0 !important;
+        }
+        .pdf-export .note {
+            font-size: 0.55rem !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0.02rem 0 !important;
+        }
+        .pdf-export .signature-canvas {
+            width: 150px !important;
+            height: 40px !important;
         }
     </style>
 </head>
@@ -264,18 +285,24 @@
         <!-- Row 7: Amount -->
         <tr>
             <td rowspan="2" class="text-center font-bold">領<br>款<br>金<br>額</td>
-            <td class="w-7/12">
-                支領金額：新台幣 <input type="text" name="amount" class="form-input-md w-3/5 inline-block"> 元<br>
-                代扣所得稅（ %）：新台幣 <input type="text" name="income_tax" class="form-input-md w-3/5 inline-block"> 元<br>
-                二代健保（2.11%）：新台幣 <input type="text" name="health_insurance_tax" class="form-input-md w-3/5 inline-block"> 元<br>
-                支領淨額：新台幣 <input type="text" name="amount_total" class="form-input-md w-3/5 inline-block"> 元
-            </td>
-            <td colspan="2" class="w-4/12 text-xs align-top">
-                本國籍應扣繳稅額 ≤ 2,000者不預先扣繳。<br>
-                非固定薪資：5% (起扣點40,001)<br>
-                執行業務報酬(9A)：10% (起扣點20,001)<br>
-                稿費(9B)：10% (起扣點20,001)<br>
-                機會中獎獎金(91)：10%(起扣點20,001)
+            <td colspan="3" style="padding: 0;">
+                <table class="w-full" style="table-layout: fixed;">
+                    <tr class="no-border">
+                        <td class="no-border" style="width: 50%; padding: 0.5rem; vertical-align: top;">
+                            支領金額：新台幣 <input type="text" name="amount" class="form-input-md w-3/5 inline-block"> 元<br>
+                            代扣所得稅（ %）：新台幣 <input type="text" name="income_tax" class="form-input-md w-3/5 inline-block"> 元<br>
+                            二代健保（2.11%）：新台幣 <input type="text" name="health_insurance_tax" class="form-input-md w-3/5 inline-block"> 元<br>
+                            支領淨額：新台幣 <input type="text" name="amount_total" class="form-input-md w-3/5 inline-block"> 元
+                        </td>
+                        <td class="no-border" style="width: 50%; padding: 0.5rem; vertical-align: top; font-size: 0.875rem;">
+                            本國籍應扣繳稅額 ≤ 2,000者不預先扣繳。<br>
+                            非固定薪資：5% (起扣點40,001)<br>
+                            執行業務報酬(9A)：10% (起扣點20,001)<br>
+                            稿費(9B)：10% (起扣點20,001)<br>
+                            機會中獎獎金(91)：10%(起扣點20,001)
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
         <!-- Row 8: Payment Method -->
@@ -502,7 +529,7 @@
 
 
             const opt = {
-              margin:       0.1,  // Minimal margin of 0.1 inches
+              margin:       [0.07, 0.1, 0.02, 0.1],  // top, left, bottom, right - minimal bottom to fit notes
               filename:     '宇鯨智能_勞務報酬單.pdf',
               image:        { type: 'jpeg', quality: 0.98 },
               html2canvas:  { 
