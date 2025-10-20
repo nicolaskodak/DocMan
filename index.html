@@ -3,19 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宇鯨智能股份有限公司 文件生成工具</title>
+    <title>宇鯨智能股份有限公司 文件管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body {
             font-family: 'Inter', 'Noto Sans TC', sans-serif;
             background-color: #f3f4f6;
         }
-        
-        /* Tab Styles */
-        .tab-container {
-            max-width: 768px;
+        .tabs-container {
+            max-width: 900px;
             margin: 2rem auto;
+            padding: 1rem;
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #f3f4f6;
+            border: none;
+            border-radius: 0.5rem 0.5rem 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+        .tab-button:hover {
+            background-color: #e5e7eb;
+        }
+        .tab-button.active {
+            background-color: white;
+            color: #2563eb;
+            border-bottom: 3px solid #2563eb;
+            margin-bottom: -2px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-container {
+            max-width: 768px;
+            margin: 0 auto;
+            padding: 2rem;
             background-color: white;
             border-radius: 0.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -69,7 +104,7 @@
         }
         
         .form-input {
-            background-color: #e0f2fe; /* Light blue background */
+            background-color: #e0f2fe;
             border: 1px solid #93c5fd;
             border-radius: 0.25rem;
             padding: 0.25rem 0.5rem;
@@ -160,11 +195,62 @@
             page-break-inside: avoid;
         }
         
+        /* NDA specific styles */
+        .nda-section {
+            margin-bottom: 1.5rem;
+        }
+        .nda-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .nda-article {
+            margin-bottom: 1.5rem;
+        }
+        .nda-article-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .nda-content {
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .nda-list {
+            margin-left: 2rem;
+            margin-top: 0.5rem;
+        }
+        .nda-signature-box {
+            border: 1px solid #6b7280;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
         /* PDF Export Optimization Styles */
-        .pdf-export .form-container {
+        .pdf-export .tabs-container {
+            padding: 0 !important;
+        }
+        .pdf-export .tab-buttons {
+            display: none !important;
+        }
+        
+        /* Labor form specific PDF styles */
+        .pdf-export #labor-form {
             margin: 0 !important;
             padding: 0.2rem !important;
             box-shadow: none !important;
+            background-color: white !important;
+            max-width: none !important;
+        }
+        
+        /* NDA form specific PDF styles */
+        .pdf-export #nda-form {
+            margin: 0 !important;
+            padding: 30px !important;
+            box-shadow: none !important;
+            background-color: white !important;
+            max-width: 100% !important;
+            width: 100% !important;
         }
         .pdf-export header {
             margin-bottom: 0.2rem !important;
@@ -198,11 +284,11 @@
             margin-top: 0.25rem !important;
             padding-top: 0.25rem !important;
         }
-        .pdf-export .note {
+        /* .pdf-export .note {
             font-size: 0.6rem !important;
             line-height: 1.1 !important;
             margin-bottom: 0.05rem !important;
-        }
+        } */
         .pdf-export .mt-4 {
             margin-top: 0.25rem !important;
         }
@@ -243,283 +329,578 @@
         }
         .pdf-export footer {
             margin: 0 !important;
-            padding: 0.1rem 0 0 0 !important;
+            padding: 0.1rem 0 0.3rem 0 !important;
         }
         .pdf-export .note {
-            font-size: 0.55rem !important;
-            line-height: 1 !important;
-            margin: 0 !important;
+            font-size: 0.3rem !important;
+            line-height: 1.15 !important;
+            margin: 0 0 0.05rem 0 !important;
             padding: 0.02rem 0 !important;
         }
         .pdf-export .signature-canvas {
             width: 150px !important;
             height: 40px !important;
         }
+        .pdf-export .nda-content {
+            font-size: 0.75rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 0.3rem !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+        }
+        .pdf-export .nda-article {
+            margin-bottom: 0.6rem !important;
+            page-break-inside: avoid !important;
+        }
+        .pdf-export .nda-article-title {
+            font-size: 0.85rem !important;
+            margin-bottom: 0.3rem !important;
+            font-weight: 600 !important;
+            page-break-after: avoid !important;
+        }
+        .pdf-export .nda-title {
+            font-size: 1.3rem !important;
+            margin-bottom: 0.6rem !important;
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+        .pdf-export .nda-section {
+            margin-bottom: 0.6rem !important;
+        }
+        .pdf-export .nda-list {
+            margin-left: 1.2rem !important;
+            margin-top: 0.25rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+        .pdf-export .nda-list > div {
+            line-height: 1.4 !important;
+            font-size: 0.75rem !important;
+            margin-bottom: 0.15rem !important;
+            word-wrap: break-word !important;
+        }
+        .pdf-export .nda-signature-box {
+            padding: 0.6rem !important;
+            page-break-inside: avoid !important;
+            margin-top: 0.5rem !important;
+        }
+        /* NDA specific spacing overrides */
+        .pdf-export #nda-form .mt-2 {
+            margin-top: 0.25rem !important;
+        }
+        .pdf-export #nda-form .mt-4 {
+            margin-top: 0.5rem !important;
+        }
+        .pdf-export #nda-form .mt-6 {
+            margin-top: 0.5rem !important;
+        }
+        .pdf-export #nda-form .mt-8 {
+            margin-top: 0.6rem !important;
+        }
+        .pdf-export #nda-form .mb-2 {
+            margin-bottom: 0.25rem !important;
+        }
+        .pdf-export #nda-form .mb-4 {
+            margin-bottom: 0.5rem !important;
+        }
+        .pdf-export #nda-form .image-upload-box {
+            border-width: 1px !important;
+            height: auto !important;
+            max-width: 100% !important;
+        }
+        .pdf-export #nda-form .form-input {
+            border: 1px solid #93c5fd !important;
+            padding: 0.15rem 0.3rem !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Keep original styles for labor form */
+        .pdf-export #labor-form .mt-4 {
+            margin-top: 0.25rem !important;
+        }
+        .pdf-export #labor-form .mt-8 {
+            margin-top: 0.2rem !important;
+        }
+        .pdf-export #labor-form .mb-2 {
+            margin-bottom: 0.15rem !important;
+        }
+        .pdf-export #labor-form .mb-4 {
+            margin-bottom: 0.25rem !important;
+        }
     </style>
 </head>
 <body>
 
-<div class="tab-container">
+<div class="tabs-container">
+    <!-- Tab Buttons -->
     <div class="tab-buttons">
-        <button class="tab-button active" onclick="switchTab('labor', this)">勞務報酬單</button>
-        <button class="tab-button" onclick="switchTab('nda', this)">自然人NDA</button>
+        <button class="tab-button active" onclick="switchTab('labor')">勞務報酬單</button>
+        <button class="tab-button" onclick="switchTab('nda')">自然人NDA</button>
     </div>
-    
-    <!-- Tab 1: 勞務報酬單 -->
+
+    <!-- Labor Form Tab -->
     <div id="labor-tab" class="tab-content active">
-        <div class="form-container">
+        <div class="form-container" id="labor-form">
+            <header class="text-center mb-6">
+                <h1 class="text-2xl font-bold">宇鯨智能股份有限公司 勞務報酬單</h1>
+            </header>
 
-    <div class="flex justify-between items-center mb-4 text-sm">
-        <div class="flex space-x-4">
-            <label class="flex items-center">
-                <input type="checkbox" checked class="form-checkbox">執行業務 9A-<input type="text" class="form-input-md" name="type_of_work" value="程式設計"> (註2)
-            </label>
-            <label class="flex items-center">
-                <input type="checkbox" class="form-checkbox">稿費 9B (註3)
-            </label>
-            <label class="flex items-center">
-                <input type="checkbox" class="form-checkbox">兼職薪資 (50) (註4)
-            </label>
-        </div>
-        <div class="flex items-center">
-            <label for="date">填表日期：</label>
-            <input type="date" id="date" name="date" class="form-date">
-        </div>
-    </div>
-
-    <!-- Main Form Table -->
-    <table style="table-layout: fixed;">
-        <!-- Row 1: Basic Info Header -->
-        <tr>
-            <td rowspan="3" class="w-1/12 text-center font-bold">領<br>款<br>人<br>基<br>本<br>資<br>料</td>
-            <td class="w-3/12">
-                <label><input type="checkbox" checked class="form-checkbox">本國籍</label><br>
-                <label><input type="checkbox" class="form-checkbox">外國籍在台 滿 183天</label><br>
-                <label><input type="checkbox" class="form-checkbox">外國籍 在台 未滿 183天</label>
-            </td>
-            <td colspan="2" class="w-8/12">
-                <table class="w-full" style="table-layout: fixed;">
-                    <tr class="no-border">
-                        <td class="no-border" style="width: 50%; padding: 0.25rem 0.25rem 0.25rem 0;">姓名：<input type="text" name="name" class="form-input" style="width: calc(100% - 30px);"></td>
-                        <td class="no-border" style="width: 50%; padding: 0.25rem 0 0.25rem 0.25rem;">聯絡電話：<input type="text" name="mobile_number" class="form-input" style="width: calc(100% - 60px);"></td>
-                    </tr>
-                    <tr class="no-border">
-                         <td class="no-border" style="width: 50%; padding: 0.25rem 0.25rem 0.25rem 0;">身分證字號：<input type="text" name="personal_id" class="form-input" style="width: calc(100% - 65px);"></td>
-                         <td class="no-border" style="width: 50%; padding: 0.25rem 0 0.25rem 0.25rem;">居留證/護照No.：<input type="text" class="form-input" style="width: calc(100% - 95px);"></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <!-- Row 2: Address -->
-        <tr>
-             <td colspan="3"><span class="form-row-label">戶籍地址：</span><input type="text" name="address" class="form-input" style="width: calc(100% - 85px); display: inline-block;"></td>
-        </tr>
-         <!-- Row 3: Mailing Address -->
-        <tr>
-             <td colspan="3">
-                 <span class="form-row-label">通訊地址：</span><input type="text" class="form-input" style="width: calc(100% - 160px); display: inline-block;">
-                 <label class="ml-4" style="display: inline-block;"><input type="checkbox" checked class="form-checkbox align-middle">同上</label>
-            </td>
-        </tr>
-        <!-- Row 4: Work Content Header -->
-        <tr>
-            <td rowspan="3" class="text-center font-bold">勞<br>務<br>內<br>容</td>
-            <td colspan="3">專案名稱：<input type="text" name="project_name" class="form-input w-4/5 inline-block" value="客戶數據標註與整理"></td>
-        </tr>
-        <!-- Row 5: Work Period -->
-        <tr>
-            <td colspan="3">
-                期間：自 <input type="date" name="work_start_date" class="form-date"> 至 <input type="date" name="work_end_date" class="form-date">
-            </td>
-        </tr>
-        <!-- Row 6: Work Description -->
-        <tr>
-            <td colspan="3">職業內容：<input type="text" name="work_content" class="form-input" style="width: calc(100% - 80px); display: inline-block;"></td>
-        </tr>
-        <!-- Row 7: Amount -->
-        <tr>
-            <td rowspan="2" class="text-center font-bold">領<br>款<br>金<br>額</td>
-            <td colspan="3" style="padding: 0;">
-                <table class="w-full" style="table-layout: fixed;">
-                    <tr class="no-border">
-                        <td class="no-border" style="width: 50%; padding: 0.5rem; vertical-align: top;">
-                            支領金額：新台幣 <input type="text" name="amount" class="form-input-md w-3/5 inline-block"> 元<br>
-                            代扣所得稅（ %）：新台幣 <input type="text" name="income_tax" class="form-input-md w-3/5 inline-block"> 元<br>
-                            二代健保（2.11%）：新台幣 <input type="text" name="health_insurance_tax" class="form-input-md w-3/5 inline-block"> 元<br>
-                            支領淨額：新台幣 <input type="text" name="amount_total" class="form-input-md w-3/5 inline-block"> 元
-                        </td>
-                        <td class="no-border" style="width: 50%; padding: 0.5rem; vertical-align: top; font-size: 0.875rem;">
-                            本國籍應扣繳稅額 ≤ 2,000者不預先扣繳。<br>
-                            非固定薪資：5% (起扣點40,001)<br>
-                            執行業務報酬(9A)：10% (起扣點20,001)<br>
-                            稿費(9B)：10% (起扣點20,001)<br>
-                            機會中獎獎金(91)：10%(起扣點20,001)
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <!-- Row 8: Payment Method -->
-        <tr>
-            <td colspan="3">
-                 <div class="mb-2">付款方式：
-                    <label><input type="checkbox" class="form-checkbox">現金</label>
-                    <label><input type="checkbox" class="form-checkbox">支票</label>
-                    <label><input type="checkbox" checked class="form-checkbox">匯款</label>
-                    <label><input type="checkbox" class="form-checkbox">禮券</label>
+            <div class="flex justify-between items-center mb-4 text-sm">
+                <div class="flex space-x-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" checked class="form-checkbox">執行業務 9A-<input type="text" class="form-input-md" name="type_of_work" value="程式設計"> (註2)
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="form-checkbox">稿費 9B (註3)
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="form-checkbox">兼職薪資 (50) (註4)
+                    </label>
                 </div>
-                <table class="w-full">
-                    <tr class="no-border">
-                        <td class="no-border p-1">銀行：<input type="text" name="bank_name" class="form-input-sm w-20 inline-block"> 銀行 <input type="text" name="bank_branch" class="form-input w-20 inline-block"> 分行</td>
-                        <td class="no-border p-1">帳號：<input type="text" name="bank_account_number" class="form-input-md"></td>
-                        <td class="no-border p-1">戶名：<input type="text" name="bank_account_name" class="form-input-md"></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <!-- Row 9: Receipt Confirmation -->
-        <tr>
-            <td colspan="4" class="p-4">
-                茲收到支付本人之報酬，共計 新台幣
-                <input type="text" name="amount_hundred_thousand" class="form-input-sm"> 拾
-                <input type="text" name="amount_ten_thousand" class="form-input-sm"> 萬
-                <input type="text" name="amount_thousand" class="form-input-sm"> 仟
-                <input type="text" name="amount_hundred" class="form-input-sm"> 佰
-                <input type="text" name="amount_ten" class="form-input-sm"> 拾
-                <input type="text" name="amount_digit" class="form-input-sm"> 元 整。
-            </td>
-        </tr>
-        <!-- Row 10: Signature -->
-        <tr>
-            <td colspan="4" class="p-4">
-                <div class="flex justify-between items-end">
-                    <div>
-                        領款人：
-                        <div class="inline-block relative">
-                            <canvas id="signatureCanvas" class="signature-canvas" width="300" height="80"></canvas>
+                <div class="flex items-center">
+                    <label for="labor_date">填表日期：</label>
+                    <input type="date" id="labor_date" name="date" class="form-date">
+                </div>
+            </div>
+
+            <!-- Main Form Table -->
+            <table style="table-layout: fixed;">
+                <!-- Row 1: Basic Info Header -->
+                <tr>
+                    <td rowspan="3" class="w-1/12 text-center font-bold">領<br>款<br>人<br>基<br>本<br>資<br>料</td>
+                    <td class="w-3/12">
+                        <label><input type="checkbox" checked class="form-checkbox">本國籍</label><br>
+                        <label><input type="checkbox" class="form-checkbox">外國籍在台 滿 183天</label><br>
+                        <label><input type="checkbox" class="form-checkbox">外國籍 在台 未滿 183天</label>
+                    </td>
+                    <td colspan="2" class="w-8/12">
+                        <table class="w-full" style="table-layout: fixed;">
+                            <tr class="no-border">
+                                <td class="no-border" style="width: 50%; padding: 0.25rem 0.25rem 0.25rem 0;">姓名：<input type="text" name="name" class="form-input" style="width: calc(100% - 30px);"></td>
+                                <td class="no-border" style="width: 50%; padding: 0.25rem 0 0.25rem 0.25rem;">聯絡電話：<input type="text" name="mobile_number" class="form-input" style="width: calc(100% - 60px);"></td>
+                            </tr>
+                            <tr class="no-border">
+                                 <td class="no-border" style="width: 50%; padding: 0.25rem 0.25rem 0.25rem 0;">身分證字號：<input type="text" name="personal_id" class="form-input" style="width: calc(100% - 65px);"></td>
+                                 <td class="no-border" style="width: 50%; padding: 0.25rem 0 0.25rem 0.25rem;">居留證/護照No.：<input type="text" class="form-input" style="width: calc(100% - 95px);"></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <!-- Row 2: Address -->
+                <tr>
+                     <td colspan="3"><span class="form-row-label">戶籍地址：</span><input type="text" name="address" class="form-input" style="width: calc(100% - 85px); display: inline-block;"></td>
+                </tr>
+                 <!-- Row 3: Mailing Address -->
+                <tr>
+                     <td colspan="3">
+                         <span class="form-row-label">通訊地址：</span><input type="text" class="form-input" style="width: calc(100% - 160px); display: inline-block;">
+                         <label class="ml-4" style="display: inline-block;"><input type="checkbox" checked class="form-checkbox align-middle">同上</label>
+                    </td>
+                </tr>
+                <!-- Row 4: Work Content Header -->
+                <tr>
+                    <td rowspan="3" class="text-center font-bold">勞<br>務<br>內<br>容</td>
+                    <td colspan="3">專案名稱：<input type="text" name="project_name" class="form-input w-4/5 inline-block" value="客戶數據標註與整理"></td>
+                </tr>
+                <!-- Row 5: Work Period -->
+                <tr>
+                    <td colspan="3">
+                        期間：自 <input type="date" name="work_start_date" class="form-date"> 至 <input type="date" name="work_end_date" class="form-date">
+                    </td>
+                </tr>
+                <!-- Row 6: Work Description -->
+                <tr>
+                    <td colspan="3">職業內容：<input type="text" name="work_content" class="form-input" style="width: calc(100% - 80px); display: inline-block;"></td>
+                </tr>
+                <!-- Row 7: Amount -->
+                <tr>
+                    <td rowspan="2" class="text-center font-bold">領<br>款<br>金<br>額</td>
+                    <td colspan="3" style="padding: 0;">
+                        <table class="w-full" style="table-layout: fixed;">
+                            <tr class="no-border">
+                                <td class="no-border" style="width: 50%; padding: 0.5rem; vertical-align: top;">
+                                    支領金額：新台幣 <input type="text" name="amount" class="form-input-md w-3/5 inline-block"> 元<br>
+                                    代扣所得稅（ %）：新台幣 <input type="text" name="income_tax" class="form-input-md w-3/5 inline-block"> 元<br>
+                                    二代健保（2.11%）：新台幣 <input type="text" name="health_insurance_tax" class="form-input-md w-3/5 inline-block"> 元<br>
+                                    支領淨額：新台幣 <input type="text" name="amount_total" class="form-input-md w-3/5 inline-block"> 元
+                                </td>
+                                <td class="no-border" style="width: 50%; padding: 0.5rem; vertical-align: top; font-size: 0.875rem;">
+                                    本國籍應扣繳稅額 ≤ 2,000者不預先扣繳。<br>
+                                    非固定薪資：5% (起扣點40,001)<br>
+                                    執行業務報酬(9A)：10% (起扣點20,001)<br>
+                                    稿費(9B)：10% (起扣點20,001)<br>
+                                    機會中獎獎金(91)：10%(起扣點20,001)
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <!-- Row 8: Payment Method -->
+                <tr>
+                    <td colspan="3">
+                         <div class="mb-2">付款方式：
+                            <label><input type="checkbox" class="form-checkbox">現金</label>
+                            <label><input type="checkbox" class="form-checkbox">支票</label>
+                            <label><input type="checkbox" checked class="form-checkbox">匯款</label>
+                            <label><input type="checkbox" class="form-checkbox">禮券</label>
                         </div>
-                        <button id="clearSignatureBtn" class="ml-2 px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300">清除</button>
-                    </div>
-                    <div class="font-bold">（親簽）</div>
-                </div>
-            </td>
-        </tr>
-        <!-- Row 11: ID Copy Note -->
-        <tr>
-            <td colspan="4" class="text-center font-bold text-red-600">
-                請附 身分證影本 （外籍人士請附居留證/護照影本）。
-            </td>
-        </tr>
-    </table>
+                        <table class="w-full">
+                            <tr class="no-border">
+                                <td class="no-border p-1">銀行：<input type="text" name="bank_name" class="form-input-sm w-20 inline-block"> 銀行 <input type="text" name="bank_branch" class="form-input w-20 inline-block"> 分行</td>
+                                <td class="no-border p-1">帳號：<input type="text" name="bank_account_number" class="form-input-md"></td>
+                                <td class="no-border p-1">戶名：<input type="text" name="bank_account_name" class="form-input-md"></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <!-- Row 9: Receipt Confirmation -->
+                <tr>
+                    <td colspan="4" class="p-4">
+                        茲收到支付本人之報酬，共計 新台幣
+                        <input type="text" name="amount_hundred_thousand" class="form-input-sm"> 拾
+                        <input type="text" name="amount_ten_thousand" class="form-input-sm"> 萬
+                        <input type="text" name="amount_thousand" class="form-input-sm"> 仟
+                        <input type="text" name="amount_hundred" class="form-input-sm"> 佰
+                        <input type="text" name="amount_ten" class="form-input-sm"> 拾
+                        <input type="text" name="amount_digit" class="form-input-sm"> 元 整。
+                    </td>
+                </tr>
+                <!-- Row 10: Signature -->
+                <tr>
+                    <td colspan="4" class="p-4">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                領款人：
+                                <div class="inline-block relative">
+                                    <canvas id="laborSignatureCanvas" class="signature-canvas" width="300" height="80"></canvas>
+                                </div>
+                                <button id="clearLaborSignatureBtn" class="ml-2 px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300">清除</button>
+                            </div>
+                            <div class="font-bold">（親簽）</div>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Row 11: ID Copy Note -->
+                <tr>
+                    <td colspan="4" class="text-center font-bold text-red-600">
+                        請附 身分證影本 （外籍人士請附居留證/護照影本）。
+                    </td>
+                </tr>
+            </table>
 
-    <!-- ID Copy Section -->
-    <div class="mt-4">
-        <h2 class="text-center font-bold text-lg mb-2">身分證（居留證/護照）影本黏貼處</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <div class="text-center font-bold mb-1">正 面</div>
-                <div class="image-upload-box" onclick="document.getElementById('id_card_front').click()">
-                    <span class="upload-text">點擊此處上傳正面</span>
-                    <img id="preview_front" class="image-preview" style="display:none;" alt="">
-                    <input type="file" id="id_card_front" class="hidden" accept="image/*" onchange="handleImageUpload(this, 'preview_front')">
+            <!-- ID Copy Section -->
+            <div class="mt-4">
+                <h2 class="text-center font-bold text-lg mb-2">身分證（居留證/護照）影本黏貼處</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="text-center font-bold mb-1">正 面</div>
+                        <div class="image-upload-box" onclick="document.getElementById('labor_id_card_front').click()">
+                            <span class="upload-text">點擊此處上傳正面</span>
+                            <img id="labor_preview_front" class="image-preview" style="display:none;" alt="">
+                            <input type="file" id="labor_id_card_front" class="hidden" accept="image/*" onchange="handleImageUpload(this, 'labor_preview_front')">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-center font-bold mb-1">反 面</div>
+                        <div class="image-upload-box" onclick="document.getElementById('labor_id_card_back').click()">
+                            <span class="upload-text">點擊此處上傳反面</span>
+                            <img id="labor_preview_back" class="image-preview" style="display:none;" alt="">
+                            <input type="file" id="labor_id_card_back" class="hidden" accept="image/*" onchange="handleImageUpload(this, 'labor_preview_back')">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div>
-                <div class="text-center font-bold mb-1">反 面</div>
-                <div class="image-upload-box" onclick="document.getElementById('id_card_back').click()">
-                    <span class="upload-text">點擊此處上傳反面</span>
-                    <img id="preview_back" class="image-preview" style="display:none;" alt="">
-                    <input type="file" id="id_card_back" class="hidden" accept="image/*" onchange="handleImageUpload(this, 'preview_back')">
-                </div>
+
+            <!-- Notes Section -->
+            <footer class="mt-8 pt-4 border-t">
+                <p class="note">註1： 承攬或接案者(非僱傭關係) ，勾選9A或9B，請填「勞務報酬單」並由 所得人親簽 ，當作費用憑證。</p>
+                <p class="note">註2： 9A執行業務者 ，係指律師、會計師、建築師、技師、醫師、藥師、助產士、醫事檢驗師、 程式設計師 、精算師、不動產估價師、物理治療師、職能治療師、營養師、心理師、地政士、記帳士、 經紀人 、代書人、 表演人 、引水人、節目製作人、商標代理人、專利代理人、仲裁人、書畫家、版畫家、命理卜卦、 工匠 、公共安全檢查人員、民間公證人 或「其他」 以技藝自力營生者。</p>
+                <p class="note">註3： 9B稿費：個人稿費、版稅、樂譜、作曲、編劇、漫畫、講演的鐘點費。</p>
+                <p class="note">註4： 已投保勞健保 之員工 免填 勞務報酬單。 (屬僱傭關係)未投保勞健保 之員工 申報薪資(50) ， 公司須繳納2.11%二代健保 (健保局隔年會發單)。</p>
+            </footer>
+
+            <div id="labor-download-section" class="text-center mt-8">
+                <button id="downloadLaborPdfBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    下載為 PDF
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Notes Section -->
-    <footer class="mt-8 pt-4 border-t">
-        <p class="note">註1： 承攬或接案者(非僱傭關係) ，勾選9A或9B，請填「勞務報酬單」並由 所得人親簽 ，當作費用憑證。</p>
-        <p class="note">註2： 9A執行業務者 ，係指律師、會計師、建築師、技師、醫師、藥師、助產士、醫事檢驗師、 程式設計師 、精算師、不動產估價師、物理治療師、職能治療師、營養師、心理師、地政士、記帳士、 經紀人 、代書人、 表演人 、引水人、節目製作人、商標代理人、專利代理人、仲裁人、書畫家、版畫家、命理卜卦、 工匠 、公共安全檢查人員、民間公證人 或「其他」 以技藝自力營生者。</p>
-        <p class="note">註3： 9B稿費：個人稿費、版稅、樂譜、作曲、編劇、漫畫、講演的鐘點費。</p>
-        <p class="note">註4： 已投保勞健保 之員工 免填 勞務報酬單。 (屬僱傭關係)未投保勞健保 之員工 申報薪資(50) ， 公司須繳納2.11%二代健保 (健保局隔年會發單)。</p>
-    </footer>
+    <!-- NDA Form Tab -->
+    <div id="nda-tab" class="tab-content">
+        <div class="form-container" id="nda-form">
+            <div class="nda-title">保密契約</div>
+            
+            <!-- 立契約書人 -->
+            <div class="nda-section">
+                <div class="font-bold mb-4">立契約書人</div>
+                <div class="nda-content mb-2">
+                    甲方：宇鯨智能股份有限公司
+                </div>
+                <div class="nda-content mb-4">
+                    乙方：<input type="text" id="nda_name" class="form-input inline-block" style="width: 300px;">（以下甲方與乙方合稱「雙方」）
+                </div>
+                <div class="nda-content">
+                    緣雙方擬進行業務合作，由甲方提供其所持有關於 <input type="text" id="nda_data" class="form-input inline-block" style="width: 400px;">（以下簡稱「本資料」），供乙方執行 <input type="text" id="nda_project" class="form-input inline-block" style="width: 400px;"> 之用（以下簡稱「本目的」）。為使合作順利進行，並確保各項機密資訊之秘密性，雙方當事人同意並約定如下：
+                </div>
+            </div>
 
-    <div id="download-section" class="text-center mt-8">
-        <button id="downloadPdfBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
-            下載為 PDF
-        </button>
+            <!-- 第一條 保密標的 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第一條 保密標的</div>
+                <div class="nda-content">
+                    一、本契約所稱「本資料」，係指甲方為達成本目的而提供予乙方之商業或技術性資訊，包括但不限於產品、筆稿、文件、計畫書、草圖、模型、圖表、統計數據、備忘錄、電子郵件、圖樣等資料，不論其以何種形式表達或載體。
+                </div>
+                <div class="nda-content mt-2">
+                    二、乙方亦同意，本契約內容及簽訂之事實，應依本契約約定保密。
+                </div>
+            </div>
+
+            <!-- 第二條 保密人員 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第二條 保密人員</div>
+                <div class="nda-content">
+                    乙方承諾僅將本資料使用於本目的，並採取符合業界標準之資訊安全措施，以維護資料機密性。除在職員工或代表人於執行本目的之必要範圍內得知悉外，乙方不得揭露予其他第三人知悉。
+                </div>
+            </div>
+
+            <!-- 第二條之一 共享資訊及甲方之責任 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第二條之一 共享資訊及甲方之責任</div>
+                <div class="nda-content">
+                    一、甲方所提供之資料，乙方應於其內部合理範圍內使用，僅限於本目的，並不得洩漏予本協議以外之第三人。
+                </div>
+                <div class="nda-content mt-2">
+                    二、乙方應就其接收之資料負責妥善處理與紀錄，如資料未附明確來源者，乙方應盡合理辨識義務。甲方如未事先標示資料來源，而事後就資料歸屬或使用方式提出不同主張，乙方得主張其無從辨識來源，並不因來源混淆而承擔責任。
+                </div>
+                <div class="nda-content mt-2">
+                    三、乙方於合理審慎之情況下使用資料，若無重大過失，亦無違反保密義務者，應不負資料歸屬錯誤所引起之相關法律責任，並得據以主張善意免責。
+                </div>
+                <div class="nda-content mt-2">
+                    四、雙方如對資料內容或處理方式有不同主張或要求時，乙方必須暫停該部分資料之使用，並請求雙方協調一致後始得繼續使用。協調不成者，雙方得請求第三方專家決定，或以書面形式確認處理方式，且雙方應負擔所產生費用。
+                </div>
+            </div>
+
+            <!-- 第三條 注意義務 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第三條 注意義務</div>
+                <div class="nda-content">
+                    乙方應維護本資料機密性，非經雙方書面同意，不得逆向解析本資料。
+                </div>
+            </div>
+
+            <!-- 第四條 契約期間 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第四條 契約期間</div>
+                <div class="nda-content">
+                    乙方對本協議所取得之機密資料，應自揭露日起負保密義務，並持續至該資料不再具機密性，或自揭露日起屆滿五年止，以較早者為準。
+                </div>
+            </div>
+
+            <!-- 第五條 除外條款 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第五條 除外條款</div>
+                <div class="nda-content">
+                    一、本資料任一部份具有下列情形之一時，該部份不適用本契約：
+                </div>
+                <div class="nda-list">
+                    <div>1. 非因乙方之故意或過失，已為公眾所知悉者；</div>
+                    <div>2. 本契約生效後，乙方自第三人處合法取得該資料，且乙方未明知或依一般合理注意義務應知該第三人取得該資料之方式不當或違反保密義務者；</div>
+                    <div>3. 乙方未使用本資料而自行獨立開發出相同技術者；</div>
+                    <div>4. 經雙方書面同意揭露者。</div>
+                </div>
+                <div class="nda-content mt-2">
+                    二、乙方因法院之裁決而必須揭露本資料者，乙方應於事前通知甲方並向法院申請相關保護措施後方得揭露。乙方雖依法院之裁決而做揭露，但乙方之保密義務並未因而解除。
+                </div>
+                <div class="nda-content mt-2">
+                    三、本條第一項及第二項之情事發生時，乙方應舉證證明該情事之發生，且應於該情事發生後立即通知甲方。
+                </div>
+            </div>
+
+            <!-- 第六條 權利保留 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第六條 權利保留</div>
+                <div class="nda-content">
+                    本契約之簽訂並不代表甲方已明示或暗示，或有義務將其擁有之相關專利權、著作權、商標權或其他智慧財產權授權予乙方。本契約之簽訂並未在雙方之間創設諸如代理、聘僱或合夥之關係；同時亦不表示當事人之間承諾開始進行或於未來從事任何技術上或商務上之合作、計劃或交易。
+                </div>
+            </div>
+
+            <!-- 第七條 擔保條款 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第七條 擔保條款</div>
+                <div class="nda-content">
+                    一、甲方擔保其所提供資料，未侵害任何第三人之智慧財產權或其他權利。如乙方因使用該資料而遭第三人主張侵權，實際提供該資料之甲方應負責排除並賠償乙方一切損害。乙方可以拒絕繼續合作並終止合約。
+                </div>
+                <div class="nda-content mt-2">
+                    二、如發生第三人主張侵權事件，乙方應立即通知甲方並配合其主張抗辯。
+                </div>
+            </div>
+
+            <!-- 第八條 協助義務 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第八條 協助義務</div>
+                <div class="nda-content">
+                    如乙方發現任何第三人不當使用本資料時，乙方應即通知甲方並與甲方充分合作，以利甲方維護其權益，或防止不當使用之情形繼續存在。
+                </div>
+            </div>
+
+            <!-- 第九條 禁止轉讓 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第九條 禁止轉讓</div>
+                <div class="nda-content">
+                    本契約之一切權利義務，非經甲方書面同意不得轉讓予第三人。
+                </div>
+            </div>
+
+            <!-- 第十條 資料返還 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第十條 資料返還</div>
+                <div class="nda-content">
+                    一、甲方得隨時以書面通知方式要求乙方返還本資料，乙方應自接獲甲方通知之日起三十個工作日內，將本資料之原件、影本及所有複製品一併返還予甲方，並不得保留任何形式之副本。
+                </div>
+                <div class="nda-content mt-2">
+                    二、當乙方完成本目的，或本契約經終止、解除或有效期間屆滿時，乙方亦應於三十個工作日內完成本資料之返還。甲方如要求乙方銷燬本資料者，乙方應配合銷燬，並於銷燬完成後立即出具書面切結書，敘明銷燬方式及完成情形。
+                </div>
+                <div class="nda-content mt-2">
+                    三、但若乙方因稽核、法令遵循、會計紀錄保存或其他依法應保存之必要情形，而需保留部分本資料之副本者，乙方得於最小必要範圍內留存，惟仍應持續遵守本契約之保密義務，並不得將該等資料用於本目的以外之用途。
+                </div>
+                <div class="nda-content mt-2">
+                    四、乙方於返還或銷燬本資料後，其保密義務仍持續有效，不因返還、銷燬或契約終止而解除。
+                </div>
+            </div>
+
+            <!-- 第十一條 違約效果 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第十一條 違約效果</div>
+                <div class="nda-content">
+                    一、乙方若違反本契約之任何約定，應賠償甲方因此所受之一切損害。乙方之員工、代理人或受僱人若於執行本目的期間違反本契約相關條款，如乙方未善盡合理內部控管措施而致該等人員違約行為者，視為乙方行為，乙方應負連帶責任。惟乙方如能證明其已採取合理之管理及監督措施，且非其可歸責之事由所致，則不負連帶責任。
+                </div>
+                <div class="nda-content mt-2">
+                    二、如甲方認為乙方違反本契約而致其權益可能受損，並有提出保全程序（如假扣押或假處分）之必要時，雙方應本誠信原則先行協商處理，協商不成者，甲方得依法院裁量及相關法律程序聲請適當保全措施，惟乙方保留依法陳述或抗辯之權利。
+                </div>
+            </div>
+
+            <!-- 第十二條 合意管轄 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第十二條 合意管轄</div>
+                <div class="nda-content">
+                    凡雙方因本契約或違反本契約引起之糾紛、爭議或歧見，雙方同意先本誠信原則協商之，協商不成而涉訟時，雙方特此同意以臺灣臺北地方法院為第一審管轄法院。
+                </div>
+            </div>
+
+            <!-- 第十三條 契約份數 -->
+            <div class="nda-article">
+                <div class="nda-article-title">第十三條 契約份數</div>
+                <div class="nda-content">
+                    本契約壹式兩份，由雙方各執壹份為憑。
+                </div>
+            </div>
+
+            <!-- 立約人簽署區 -->
+            <div class="nda-section mt-8">
+                <div class="font-bold mb-4">立約人：</div>
+                
+                <!-- 甲方 -->
+                <div class="nda-signature-box mb-4">
+                    <div class="font-bold mb-2">甲方</div>
+                    <table class="w-full" style="border: none;">
+                        <tr class="no-border">
+                            <td class="no-border" style="width: 60%; padding: 0.5rem 0;">
+                                <div>公司：宇鯨智能股份有限公司</div>
+                                <div class="mt-2">代表人：柯達</div>
+                                <div class="mt-2">地址：臺北市信義區基隆路1段155號7樓</div>
+                            </td>
+                            <td class="no-border" style="width: 40%; text-align: center; vertical-align: middle;">
+                                <div style="display: flex; gap: 1rem; justify-content: center; align-items: flex-start;">
+                                    <!-- 公司章 -->
+                                    <div>
+                                        <div style="font-size: 0.75rem; margin-bottom: 0.25rem; color: #666;">公司章</div>
+                                        <div class="image-upload-box" onclick="document.getElementById('nda_company_seal').click()" style="width: 120px; height: 120px; cursor: pointer;">
+                                            <span class="upload-text" style="font-size: 0.7rem;">點擊上傳</span>
+                                            <img id="nda_preview_company_seal" class="image-preview" style="display:none;" alt="">
+                                            <input type="file" id="nda_company_seal" class="hidden" accept="image/*" onchange="handleImageUpload(this, 'nda_preview_company_seal')">
+                                        </div>
+                                    </div>
+                                    <!-- 小章 -->
+                                    <div>
+                                        <div style="font-size: 0.75rem; margin-bottom: 0.25rem; color: #666;">小章</div>
+                                        <div class="image-upload-box" onclick="document.getElementById('nda_small_seal').click()" style="width: 80px; height: 80px; cursor: pointer;">
+                                            <span class="upload-text" style="font-size: 0.65rem;">點擊上傳</span>
+                                            <img id="nda_preview_small_seal" class="image-preview" style="display:none;" alt="">
+                                            <input type="file" id="nda_small_seal" class="hidden" accept="image/*" onchange="handleImageUpload(this, 'nda_preview_small_seal')">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- 乙方 -->
+                <div class="nda-signature-box">
+                    <div class="font-bold mb-2">乙方</div>
+                    <div class="mb-2">
+                        姓名：<input type="text" id="nda_signature_name" class="form-input inline-block" style="width: 300px;">
+                    </div>
+                    <div class="mb-2">
+                        身分證字號：<input type="text" id="nda_personal_id" class="form-input inline-block" style="width: 200px;">
+                    </div>
+                    <div class="mb-4">
+                        地址：<input type="text" id="nda_address" class="form-input inline-block" style="width: 500px;">
+                    </div>
+                    <div class="flex items-center">
+                        <span class="mr-2">簽名：</span>
+                        <canvas id="ndaSignatureCanvas" class="signature-canvas" width="300" height="80"></canvas>
+                        <button id="clearNdaSignatureBtn" class="ml-2 px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300">清除</button>
+                    </div>
+                </div>
+
+                <!-- 簽訂日期 -->
+                <div class="text-center mt-6 font-bold">
+                    簽訂日期：<input type="date" id="nda_sign_date" class="form-date">
+                </div>
+            </div>
+
+            <div id="nda-download-section" class="text-center mt-8">
+                <button id="downloadNdaPdfBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    下載為 PDF
+                </button>
+            </div>
+        </div>
     </div>
-
 </div>
 
     </div><!-- End labor-tab -->
     
     <!-- Tab 2: 自然人NDA -->
     <div id="nda-tab" class="tab-content">
-        <div class="form-container">
-            <header class="text-center mb-6">
-                <h1 class="text-2xl font-bold">保密契約</h1>
-            </header>
-
-            <div class="mb-4">
-                <h3 class="text-lg font-bold mb-3">立契約書人</h3>
-                <div class="mb-3">
-                    <label class="block font-semibold mb-1">甲方：宇鯨智能股份有限公司</label>
-                </div>
-                <div class="mb-3">
-                    <label class="block font-semibold mb-1">乙方姓名：</label>
-                    <input type="text" id="nda-name" class="form-input" placeholder="填寫乙方姓名">
-                </div>
-                <div class="mb-3">
-                    <label class="block font-semibold mb-1">資料內容：</label>
-                    <input type="text" id="nda-data" class="form-input" placeholder="例：客戶名單、商業計劃" value="客戶數據">
-                </div>
-                <div class="mb-3">
-                    <label class="block font-semibold mb-1">執行項目：</label>
-                    <input type="text" id="nda-project" class="form-input" placeholder="例：數據標註與整理" value="數據標註與整理">
-                </div>
-                <div class="mb-3">
-                    <label class="block font-semibold mb-1">乙方身分證字號：</label>
-                    <input type="text" id="nda-personal-id" class="form-input" placeholder="填寫身分證字號">
-                </div>
-                <div class="mb-3">
-                    <label class="block font-semibold mb-1">乙方地址：</label>
-                    <input type="text" id="nda-address" class="form-input" placeholder="填寫完整地址">
-                </div>
-                <div class="mb-3">
-                    <label class="block font-semibold mb-1">簽訂日期：</label>
-                    <input type="date" id="nda-date" class="form-date">
-                </div>
-            </div>
-
-            <div id="download-nda-section" class="text-center mt-8">
-                <button id="downloadNdaPdfBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                    下載為 PDF
-                </button>
-            </div>
-        </div>
+        <!-- NDA form is shown here when the tab is active -->
     </div><!-- End nda-tab -->
 
 </div><!-- End tab-container -->
 
 <script>
     // --- Tab Switching Logic ---
-    function switchTab(tabName, button) {
+    function switchTab(tabName) {
         // Hide all tabs
-        const allTabs = document.querySelectorAll('.tab-content');
-        allTabs.forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
         
-        // Deactivate all buttons
-        const allButtons = document.querySelectorAll('.tab-button');
-        allButtons.forEach(btn => btn.classList.remove('active'));
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
         
-        // Show selected tab
-        const selectedTab = document.getElementById(tabName + '-tab');
-        if (selectedTab) {
-            selectedTab.classList.add('active');
+        // Show selected tab and activate corresponding button
+        if (tabName === 'labor') {
+            document.getElementById('labor-tab').classList.add('active');
+            document.querySelectorAll('.tab-button')[0].classList.add('active');
+        } else if (tabName === 'nda') {
+            document.getElementById('nda-tab').classList.add('active');
+            document.querySelectorAll('.tab-button')[1].classList.add('active');
         }
-        
-        // Activate clicked button
-        button.classList.add('active');
     }
 
     // --- Simple Image Upload Handler ---
@@ -542,28 +923,16 @@
         };
         reader.readAsDataURL(file);
     }
+
     // --- Signature Canvas Logic ---
-    window.addEventListener('load', () => {
-        const canvas = document.getElementById('signatureCanvas');
-        const clearButton = document.getElementById('clearSignatureBtn');
+    function initSignatureCanvas(canvasId, clearBtnId) {
+        const canvas = document.getElementById(canvasId);
+        const clearButton = document.getElementById(clearBtnId);
         const ctx = canvas.getContext('2d');
 
         let drawing = false;
         let lastX = 0;
         let lastY = 0;
-
-        // Set today's date as default for the date inputs
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        const dateString = `${yyyy}-${mm}-${dd}`;
-        
-        const dateInput = document.getElementById('date');
-        if (dateInput) dateInput.value = dateString;
-        
-        const ndaDateInput = document.getElementById('nda-date');
-        if (ndaDateInput) ndaDateInput.value = dateString;
 
         // Set line style
         ctx.strokeStyle = '#000000';
@@ -586,7 +955,6 @@
                 y: touchEvent.touches[0].clientY - rect.top
             };
         }
-
 
         function draw(x, y) {
             if (!drawing) return;
@@ -623,21 +991,36 @@
              drawing = false;
         });
 
-
         // Clear button
         clearButton.addEventListener('click', () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
+    }
+
+    window.addEventListener('load', () => {
+        // Initialize signature canvases
+        initSignatureCanvas('laborSignatureCanvas', 'clearLaborSignatureBtn');
+        initSignatureCanvas('ndaSignatureCanvas', 'clearNdaSignatureBtn');
+
+        // Set today's date as default for date inputs
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+        
+        document.getElementById('labor_date').value = todayStr;
+        document.getElementById('nda_sign_date').value = todayStr;
     });
 
-    // --- PDF Download Logic ---
-    document.getElementById('downloadPdfBtn').addEventListener('click', function () {
-        const formContainer = document.querySelector('.form-container');
-        const downloadSection = document.getElementById('download-section');
+    // --- PDF Download Logic for Labor Form ---
+    document.getElementById('downloadLaborPdfBtn').addEventListener('click', function () {
+        const formContainer = document.getElementById('labor-form');
+        const downloadSection = document.getElementById('labor-download-section');
         const body = document.body;
         
         // Check if images are loaded
-        const images = document.querySelectorAll('.image-preview');
+        const images = formContainer.querySelectorAll('.image-preview');
         const imagePromises = Array.from(images).map(img => {
             if (img.src && img.src !== '' && !img.complete) {
                 return new Promise((resolve) => {
@@ -650,16 +1033,17 @@
         
         // Wait for all images to load before generating PDF
         Promise.all(imagePromises).then(() => {
-            // Hide the button section from the PDF output
             downloadSection.style.display = 'none';
-            // Temporarily remove max-width to allow proper scaling for the PDF
+            
+            // Backup original styles
+            const originalMaxWidth = formContainer.style.maxWidth;
+            
+            // Set for PDF generation
             formContainer.style.maxWidth = 'none';
-            // Add PDF export class for optimized styling
             body.classList.add('pdf-export');
 
-
             const opt = {
-              margin:       [0.07, 0.1, 0.02, 0.1],  // top, left, bottom, right - minimal bottom to fit notes
+              margin:       [0.07, 0.1, 0.15, 0.1],
               filename:     '宇鯨智能_勞務報酬單.pdf',
               image:        { type: 'jpeg', quality: 0.98 },
               html2canvas:  { 
@@ -673,159 +1057,86 @@
               pagebreak:    { mode: ['css', 'avoid-all'] }
             };
 
-            // Generate and save the PDF, then show the button again and restore styles
             html2pdf().set(opt).from(formContainer).save().then(() => {
                 downloadSection.style.display = 'block';
-                formContainer.style.maxWidth = '1024px';
+                formContainer.style.maxWidth = originalMaxWidth || '768px';
                 body.classList.remove('pdf-export');
             });
         });
     });
 
-    // --- NDA PDF Download Logic ---
+    // --- PDF Download Logic for NDA Form ---
     document.getElementById('downloadNdaPdfBtn').addEventListener('click', function () {
-        // Get form values
-        const ndaName = document.getElementById('nda-name').value || '<<[name]>>';
-        const ndaData = document.getElementById('nda-data').value || '<<[data]>>';
-        const ndaProject = document.getElementById('nda-project').value || '<<[project]>>';
-        const ndaPersonalId = document.getElementById('nda-personal-id').value || '<<[personal_id]>>';
-        const ndaAddress = document.getElementById('nda-address').value || '<<[address]>>';
-        const ndaDate = document.getElementById('nda-date').value || new Date().toISOString().split('T')[0];
+        const formContainer = document.getElementById('nda-form');
+        const downloadSection = document.getElementById('nda-download-section');
+        const body = document.body;
+        
+        // Check if images are loaded
+        const images = formContainer.querySelectorAll('.image-preview');
+        const imagePromises = Array.from(images).map(img => {
+            if (img.src && img.src !== '' && !img.complete) {
+                return new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            }
+            return Promise.resolve();
+        });
+        
+        // Wait for all images to load before generating PDF
+        Promise.all(imagePromises).then(() => {
+            downloadSection.style.display = 'none';
+            
+            // Backup original styles
+            const originalMaxWidth = formContainer.style.maxWidth;
+            const originalWidth = formContainer.style.width;
+            const originalPadding = formContainer.style.padding;
+            
+            // Set container width for PDF generation
+            formContainer.style.maxWidth = '100%';
+            formContainer.style.width = '100%';
+            formContainer.style.padding = '30px';
+            formContainer.style.margin = '0';
+            formContainer.style.boxSizing = 'border-box';
+            
+            body.classList.add('pdf-export');
 
-        // Create NDA HTML content with form values
-        const ndaHtmlContent = `
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { font-family: 'Noto Sans TC', sans-serif; padding: 20px; line-height: 1.6; }
-        h3 { font-size: 16px; margin-top: 20px; margin-bottom: 10px; }
-        p { margin: 8px 0; font-size: 14px; }
-        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-        td { border: 1px solid #000; padding: 8px; }
-        .header { text-align: center; font-weight: bold; margin-bottom: 20px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h2>保密契約</h2>
-    </div>
+            const opt = {
+              margin:       [18, 18, 18, 18],
+              filename:     '宇鯨智能_自然人NDA.pdf',
+              image:        { type: 'jpeg', quality: 0.95 },
+              html2canvas:  { 
+                  scale: 2,
+                  useCORS: true, 
+                  allowTaint: true,
+                  logging: false,
+                  imageTimeout: 0,
+                  scrollY: 0,
+                  scrollX: 0
+              },
+              jsPDF:        { 
+                  unit: 'mm', 
+                  format: 'a4', 
+                  orientation: 'portrait'
+              },
+              pagebreak:    { 
+                  mode: ['css', 'legacy'],
+                  avoid: ['.nda-article-title', '.nda-signature-box']
+              }
+            };
 
-    <h3>立契約書人</h3>
-    <p>甲方：宇鯨智能股份有限公司</p>
-    <p>乙方：${ndaName}（以下甲方與乙方合稱「雙方」）</p>
-    
-    <p>緣雙放擬進行業務合作，由甲方提供其所持有關於 ${ndaData}（以下簡稱「本資料」），供乙方執行 ${ndaProject} 之用（以下簡稱「本目的」）。為使合作順利進行，並確保各項機密資訊之秘密性，雙方當事人同意並約定如下：</p>
-
-    <h3>第一條 保密標的</h3>
-    <p>一、本契約所稱「本資料」，係指甲方為達成本目的而提供予乙方之商業或技術性資訊，包括但不限於產品、筆稿、文件、計畫書、草圖、模型、圖表、統計數據、備忘錄、電子郵件、圖樣等資料，不論其以何種形式表達或載體。</p>
-    <p>二、乙方亦同意，本契約內容及簽訂之事實，應依本契約約定保密。</p>
-
-    <h3>第二條 保密人員</h3>
-    <p>乙方承諾僅將本資料使用於本目的，並採取符合業界標準之資訊安全措施，以維護資料機密性。除在職員工或代表人於執行本目的之必要範圍內得知悉外，丙方不得揭露予其他第三人知悉。</p>
-
-    <h3>第二條之一 共享資訊及甲方之責任</h3>
-    <p>一、甲方所提供之資料，乙方應於其內部合理範圍內使用，僅限於本目的，並不得洩漏予本協議以外之第三人。</p>
-    <p>二、乙方應就其接收之資料負責妥善處理與紀錄，如資料未附明確來源者，乙方應盡合理辨識義務。甲方如未事先標示資料來源，而事後就資料歸屬或使用方式提出不同主張，乙方得主張其無從辨識來源，並不因來源混淆而承擔責任。</p>
-    <p>三、乙方於合理審慎之情況下使用資料，若無重大過失，亦無違反保密義務者，應不負資料歸屬錯誤所引起之相關法律責任，並得據以主張善意免責。</p>
-    <p>四、雙方如對資料內容或處理方式有不同主張或要求時，乙方必須暫停該部分資料之使用，並請求雙方協調一致後始得繼續使用。協調不成者，雙方得請求第三方專家決定，或以書面形式確認處理方式，且雙方應負擔所產生費用。</p>
-
-    <h3>第三條 注意義務</h3>
-    <p>乙方應維護本資料機密性，非經雙方書面同意，不得逆向解析本資料。</p>
-
-    <h3>第四條 契約期間</h3>
-    <p>乙方對本協議所取得之機密資料，應自揭露日起負保密義務，並持續至該資料不再具機密性，或自揭露日起屆滿五年止，以較早者為準。</p>
-
-    <h3>第五條 除外條款</h3>
-    <p>一、本資料任一部份具有下列情形之一時，該部份不適用本契約：</p>
-    <p>1. 非因乙方之故意或過失，已為公眾所知悉者；</p>
-    <p>2. 本契約生效後，乙方自第三人處合法取得該資料，且乙方未明知或依一般合理注意義務應知該第三人取得該資料之方式不當或違反保密義務者；</p>
-    <p>3. 乙方未使用本資料而自行獨立開發出相同技術者；</p>
-    <p>4. 經雙方書面同意揭露者。</p>
-    <p>二、乙方因法院之裁決而必須揭露本資料者，乙方應於事前通知甲方並向法院申請相關保護措施後方得揭露。乙方雖依法院之裁決而做揭露，但乙方之保密義務並未因而解除。</p>
-    <p>三、本條第一項及第二項之情事發生時，乙方應舉證證明該情事之發生，且應於該情事發生後立即通知甲方。</p>
-
-    <h3>第六條 權利保留</h3>
-    <p>本契約之簽訂並不代表甲方已明示或暗示，或有義務將其擁有之相關專利權、著作權、商標權或其他智慧財產權授權予乙方。本契約之簽訂並未在雙方之間創設諸如代理、聘僱或合夥之關係；同時亦不表示當事人之間承諾開始進行或於未來從事任何技術上或商務上之合作、計劃或交易。</p>
-
-    <h3>第七條 擔保條款</h3>
-    <p>一、甲方擔保其所提供資料，未侵害任何第三人之智慧財產權或其他權利。如乙方因使用該資料而遭第三人主張侵權，實際提供該資料之甲方應負責排除並賠償乙方一切損害。乙方可以拒絕繼續合作並終止合約。</p>
-    <p>二、如發生第三人主張侵權事件，乙方應立即通知甲方並配合其主張抗辯。</p>
-
-    <h3>第八條 協助義務</h3>
-    <p>如乙方發現任何第三人不當使用本資料時，乙方應即通知甲方並與甲方充分合作，以利甲方維護其權益，或防止不當使用之情形繼續存在。</p>
-
-    <h3>第九條 禁止轉讓</h3>
-    <p>本契約之一切權利義務，非經甲方書面同意不得轉讓予第三人。</p>
-
-    <h3>第十條 資料返還</h3>
-    <p>一、甲方得隨時以書面通知方式要求乙方返還本資料，乙方應自接獲甲方通知之日起三十個工作日內，將本資料之原件、影本及所有複製品一併返還予甲方，並不得保留任何形式之副本。</p>
-    <p>二、當乙方完成本目的，或本契約經終止、解除或有效期間屆滿時，乙方亦應於三十個工作日內完成本資料之返還。甲方如要求乙方銷燬本資料者，乙方應配合銷燬，並於銷燬完成後立即出具書面切結書，敘明銷燬方式及完成情形。</p>
-    <p>三、但若乙方因稽核、法令遵循、會計紀錄保存或其他依法應保存之必要情形，而需保留部分本資料之副本者，乙方得於最小必要範圍內留存，惟仍應持續遵守本契約之保密義務，並不得將該等資料用於本目的以外之用途。</p>
-    <p>四、乙方於返還或銷燬本資料後，其保密義務仍持續有效，不因返還、銷燬或契約終止而解除。</p>
-
-    <h3>第十一條 違約效果</h3>
-    <p>一、乙方若違反本契約之任何約定，應賠償甲方因此所受之一切損害。乙方之員工、代理人或受僱人若於執行本目的期間違反本契約相關條款，如乙方未善盡合理內部控管措施而致該等人員違約行為者，視為乙方行為，乙方應負連帶責任。惟乙方如能證明其已採取合理之管理及監督措施，且非其可歸責之事由所致，則不負連帶責任。</p>
-    <p>二、如甲方認為乙方違反本契約而致其權益可能受損，並有提出保全程序（如假扣押或假處分）之必要時，雙方應本誠信原則先行協商處理，協商不成者，甲方得依法院裁量及相關法律程序聲請適當保全措施，惟乙方保留依法陳述或抗辯之權利。</p>
-
-    <h3>第十二條 合意管轄</h3>
-    <p>凡雙方因本契約或違反本契約引起之糾紛、爭議或歧見，雙方同意先本誠信原則協商之，協商不成而涉訟時，雙方特此同意以臺灣臺北地方法院為第一審管轄法院。</p>
-
-    <h3>第十三條 契約份數</h3>
-    <p>本契約壹式兩份，由雙方各執壹份為憑。</p>
-
-    <h3>立約人：</h3>
-    <table>
-        <tr>
-            <td>
-                <strong>甲方</strong><br>
-                公司：宇鯨智能股份有限公司<br>
-                代表人：柯達<br>
-                地址：臺北市信義區基隆路1段155號7樓<br>
-                簽章：_______________
-            </td>
-        </tr>
-    </table>
-
-    <table>
-        <tr>
-            <td>
-                <strong>乙方</strong><br>
-                姓名：${ndaName}<br>
-                身分證字號：${ndaPersonalId}<br>
-                地址：${ndaAddress}<br>
-                簽章：_______________
-            </td>
-        </tr>
-    </table>
-
-    <p><strong>簽訂日期：${ndaDate}</strong></p>
-</body>
-</html>
-        `;
-
-        // Create a temporary div with the NDA content
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = ndaHtmlContent;
-        tempDiv.style.display = 'none';
-        document.body.appendChild(tempDiv);
-
-        // Generate PDF
-        const opt = {
-            margin: 10,
-            filename: '宇鯨智能_自然人NDA.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(tempDiv).save().then(() => {
-            document.body.removeChild(tempDiv);
+            html2pdf().set(opt).from(formContainer).save().then(() => {
+                downloadSection.style.display = 'block';
+                formContainer.style.maxWidth = originalMaxWidth;
+                formContainer.style.width = originalWidth;
+                formContainer.style.padding = originalPadding;
+                formContainer.style.margin = '0 auto';
+                formContainer.style.boxSizing = '';
+                body.classList.remove('pdf-export');
+            });
         });
     });
 </script>
 
 </body>
 </html>
-
